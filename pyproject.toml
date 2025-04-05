@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dev_utils_app"
+version = "0.1.0"
+description = "개발자 유틸리티 앱"
+requires-python = ">=3.8"
+dependencies = [
+    "customtkinter>=5.2.0",
+    "pillow>=9.5.0",
+    "diff-match-patch>=20200713",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[tool.uv]
+python = "3.8" 
