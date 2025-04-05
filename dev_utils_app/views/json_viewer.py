@@ -12,13 +12,13 @@ class JsonTreeView(ttk.Treeview):
         super().__init__(master, **kwargs)
         
         # 스타일 설정
-        style = ttk.Style()
-        style.configure("Treeview", 
+        self.style = ttk.Style()
+        self.style.configure("Treeview", 
                         background="gray95",
                         foreground="black",
                         rowheight=25,
                         fieldbackground="gray95")
-        style.map('Treeview', 
+        self.style.map('Treeview', 
                   background=[('selected', '#347083')])
         
         # 다크 모드/라이트 모드 테마 변경 감지
@@ -27,22 +27,32 @@ class JsonTreeView(ttk.Treeview):
     def update_theme(self):
         """현재 테마에 따라 트리뷰 색상 업데이트"""
         mode = ctk.get_appearance_mode()
-        style = ttk.Style()
         
         if mode == "Dark":
-            style.configure("Treeview", 
-                            background="#2b2b2b",
-                            foreground="#ffffff",
-                            fieldbackground="#2b2b2b")
-            style.map('Treeview', 
+            bg_color = "#2b2b2b"
+            fg_color = "#ffffff"
+            self.style.configure("Treeview", 
+                            background=bg_color,
+                            foreground=fg_color,
+                            fieldbackground=bg_color)
+            self.style.map('Treeview', 
                       background=[('selected', '#347083')])
         else:
-            style.configure("Treeview", 
-                            background="gray95",
-                            foreground="black",
-                            fieldbackground="gray95")
-            style.map('Treeview', 
+            bg_color = "gray95"
+            fg_color = "black"
+            self.style.configure("Treeview", 
+                            background=bg_color,
+                            foreground=fg_color,
+                            fieldbackground=bg_color)
+            self.style.map('Treeview', 
                       background=[('selected', '#347083')])
+        
+        # 부모 컨테이너 색상도 업데이트
+        if hasattr(self.master, "configure"):
+            if mode == "Dark":
+                self.master.configure(fg_color=bg_color)
+            else:
+                self.master.configure(fg_color=bg_color)
 
 class JsonViewerView(ctk.CTkFrame):
     """JSON 뷰어 기능을 제공하는 뷰"""
@@ -96,7 +106,9 @@ class JsonViewerView(ctk.CTkFrame):
         self.input_text.grid(row=1, column=0, sticky="nsew", padx=10, pady=5)
         
         # JSON 트리 뷰 프레임 (트리뷰를 담는 컨테이너)
-        self.tree_container = ctk.CTkFrame(self.content_frame)
+        # 테마에 맞는 색상 설정
+        tree_bg_color = "#2b2b2b" if ctk.get_appearance_mode() == "Dark" else "gray95"
+        self.tree_container = ctk.CTkFrame(self.content_frame, fg_color=tree_bg_color)
         self.tree_container.grid(row=1, column=1, sticky="nsew", padx=10, pady=5)
         self.tree_container.grid_columnconfigure(0, weight=1)
         self.tree_container.grid_rowconfigure(0, weight=1)
@@ -175,6 +187,7 @@ class JsonViewerView(ctk.CTkFrame):
         
         # 테마 리스너 등록
         self.master.theme_manager.add_theme_listener(self.tree)
+        self.master.theme_manager.add_theme_listener(self)
     
     def parse_json(self):
         """JSON 파싱 및 트리 뷰에 표시"""
@@ -258,7 +271,13 @@ class JsonViewerView(ctk.CTkFrame):
     
     def update_theme(self):
         """테마 변경 시 호출"""
+        # 트리 업데이트
         self.tree.update_theme()
+        
+        # 컨테이너 색상 업데이트 (트리와 동일하게)
+        mode = ctk.get_appearance_mode()
+        bg_color = "#2b2b2b" if mode == "Dark" else "gray95"
+        self.tree_container.configure(fg_color=bg_color)
     
     def load_example(self):
         """예제 JSON 데이터 로드"""

@@ -22,7 +22,7 @@ class App(ctk.CTk):
         super().__init__()
         
         # 앱 설정
-        self.title("개발 유틸리티 앱")
+        self.title("개발자 유틸리티 앱")
         
         # 화면 크기 및 위치 설정
         width = 1200
