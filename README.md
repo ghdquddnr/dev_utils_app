@@ -2,6 +2,8 @@
 
 개발자를 위한 다양한 유틸리티 기능을 제공하는 파이썬 GUI 애플리케이션입니다. 현대적인 UI와 편리한 기능으로 개발 작업을 더 효율적으로 만들어 줍니다.
 
+*Read this in other languages: [English](README.en.md), [日本語](README.ja.md), [简体中文](README.zh-CN.md), [Español](README.es.md), [Français](README.fr.md), [Deutsch](README.de.md)*
+
 ![애플리케이션 스크린샷](screenshot.png)
 
 ## 주요 기능
