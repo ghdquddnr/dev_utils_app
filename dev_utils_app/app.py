@@ -9,6 +9,7 @@ from PIL import Image
 from dev_utils_app.utils.theme import ThemeManager
 from dev_utils_app.views.sidebar import Sidebar
 from dev_utils_app.views.text_diff import TextDiffView
+from dev_utils_app.views.json_viewer import JsonViewerView
 
 # 기본 테마 설정
 ctk.set_appearance_mode("system")  # 시스템 테마 따라가기
@@ -53,7 +54,8 @@ class App(ctk.CTk):
     def create_views(self):
         """모든 뷰 생성"""
         self.views = {
-            "text_diff": TextDiffView(self)
+            "text_diff": TextDiffView(self),
+            "json_viewer": JsonViewerView(self)
         }
         
         # 모든 뷰를 그리드에 배치

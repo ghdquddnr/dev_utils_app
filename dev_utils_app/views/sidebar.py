@@ -37,6 +37,11 @@ class Sidebar(ctk.CTkFrame):
                 "text": "텍스트 비교",
                 "command": lambda: self.master.show_view("text_diff"),
                 "button": None
+            },
+            "json_viewer": {
+                "text": "JSON 뷰어",
+                "command": lambda: self.master.show_view("json_viewer"),
+                "button": None
             }
         }
         

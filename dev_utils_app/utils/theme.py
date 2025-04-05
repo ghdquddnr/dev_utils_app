@@ -10,6 +10,7 @@ class ThemeManager:
     def __init__(self, app):
         self.app = app
         self.current_theme = "system"  # 기본값: 시스템 설정 따라가기
+        self.theme_listeners = []  # 테마 변경 리스너 목록
         
         # 설정 파일 경로
         self.config_dir = os.path.join(os.path.expanduser("~"), ".dev_utils_app")
@@ -54,4 +55,19 @@ class ThemeManager:
         """테마 적용"""
         self.current_theme = theme
         ctk.set_appearance_mode(theme)
-        self.save_settings() 
+        self.save_settings()
+        
+        # 리스너에게 테마 변경 알림
+        for listener in self.theme_listeners:
+            if hasattr(listener, "update_theme"):
+                listener.update_theme()
+    
+    def add_theme_listener(self, listener):
+        """테마 변경 리스너 추가"""
+        if listener not in self.theme_listeners:
+            self.theme_listeners.append(listener)
+    
+    def remove_theme_listener(self, listener):
+        """테마 변경 리스너 제거"""
+        if listener in self.theme_listeners:
+            self.theme_listeners.remove(listener) 
