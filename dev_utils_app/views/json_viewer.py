@@ -49,10 +49,7 @@ class JsonTreeView(ttk.Treeview):
         
         # 부모 컨테이너 색상도 업데이트
         if hasattr(self.master, "configure"):
-            if mode == "Dark":
-                self.master.configure(fg_color=bg_color)
-            else:
-                self.master.configure(fg_color=bg_color)
+            self.master.configure(bg=bg_color)
 
 class JsonViewerView(ctk.CTkFrame):
     """JSON 뷰어 기능을 제공하는 뷰"""
@@ -105,13 +102,25 @@ class JsonViewerView(ctk.CTkFrame):
         )
         self.input_text.grid(row=1, column=0, sticky="nsew", padx=10, pady=5)
         
-        # JSON 트리 뷰 프레임 (트리뷰를 담는 컨테이너)
-        # 테마에 맞는 색상 설정
+        # JSON 트리 뷰 프레임을 tkinter Frame으로 생성 (tkinter 위젯과 통일성 유지)
         tree_bg_color = "#2b2b2b" if ctk.get_appearance_mode() == "Dark" else "gray95"
-        self.tree_container = ctk.CTkFrame(self.content_frame, fg_color=tree_bg_color)
-        self.tree_container.grid(row=1, column=1, sticky="nsew", padx=10, pady=5)
+        
+        # 외부 컨테이너 (배경색용)
+        self.tree_outer_container = tk.Frame(self.content_frame, bg=tree_bg_color)
+        self.tree_outer_container.grid(row=1, column=1, sticky="nsew", padx=10, pady=5)
+        self.tree_outer_container.grid_columnconfigure(0, weight=1)
+        self.tree_outer_container.grid_rowconfigure(0, weight=1)
+        
+        # 내부 컨테이너 (트리뷰용) - 배경색 동일
+        self.tree_container = tk.Frame(self.tree_outer_container, bg=tree_bg_color)
+        self.tree_container.grid(row=0, column=0, sticky="nsew")
         self.tree_container.grid_columnconfigure(0, weight=1)
         self.tree_container.grid_rowconfigure(0, weight=1)
+        
+        # 배경 프레임 - 트리뷰 아래 빈 영역을 채우기 위한 더미 프레임
+        self.bg_frame = tk.Frame(self.tree_outer_container, bg=tree_bg_color)
+        self.bg_frame.place(x=0, y=0, relwidth=1, relheight=1)
+        self.bg_frame.lower()  # 가장 아래로 배치
         
         # 트리 뷰는 tkinter를 사용 (CustomTkinter에는 없음)
         self.tree = JsonTreeView(
@@ -125,10 +134,12 @@ class JsonViewerView(ctk.CTkFrame):
         self.tree.heading("value", text="값")
         self.tree.grid(row=0, column=0, sticky="nsew")
         
-        # 스크롤바 추가
-        self.tree_scrollbar = ctk.CTkScrollbar(
+        # 스크롤바 추가 (tkinter 스크롤바 사용)
+        self.tree_scrollbar = tk.Scrollbar(
             self.tree_container, 
-            command=self.tree.yview
+            command=self.tree.yview,
+            bg=tree_bg_color,
+            troughcolor=tree_bg_color
         )
         self.tree_scrollbar.grid(row=0, column=1, sticky="ns")
         self.tree.configure(yscrollcommand=self.tree_scrollbar.set)
@@ -277,7 +288,18 @@ class JsonViewerView(ctk.CTkFrame):
         # 컨테이너 색상 업데이트 (트리와 동일하게)
         mode = ctk.get_appearance_mode()
         bg_color = "#2b2b2b" if mode == "Dark" else "gray95"
-        self.tree_container.configure(fg_color=bg_color)
+        
+        # 모든 컨테이너 배경색 업데이트
+        self.tree_outer_container.configure(bg=bg_color)
+        self.tree_container.configure(bg=bg_color)
+        self.bg_frame.configure(bg=bg_color)
+        
+        # 스크롤바 색상 업데이트
+        try:
+            self.tree_scrollbar.configure(bg=bg_color, troughcolor=bg_color)
+        except Exception:
+            # 일부 플랫폼에서는 스크롤바 색상 변경이 지원되지 않을 수 있음
+            pass
     
     def load_example(self):
         """예제 JSON 데이터 로드"""
